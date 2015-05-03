@@ -14,7 +14,7 @@ class nodeSud
         nodeSud();
         ~nodeSud();
         void previousMove(Node *headNode, int row, int col, int number);
-        void saveMove(Node *headNode, int row, int col, int number);
+        void saveMove(Node *headNode, int, int, int);
     protected:
     private:
 };

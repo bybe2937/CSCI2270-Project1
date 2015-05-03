@@ -11,6 +11,7 @@ Final Project
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #define N 9
 #define UNASSIGNED 0
 using namespace std;
@@ -27,9 +28,13 @@ void printBoard(int grid[N][N]);
 
 int main()
 {
+    //Create NodeSude Object
+    nodeSud *n = new nodeSud();
+
     // Three pre written puzzles
     int easy1[N][N] =
-        {{0,0,6, 0,0,7 ,3,0,0},
+    {
+        {0,0,6, 0,0,7 ,3,0,0},
         {0,1,8, 0,0,9, 0,5,0},
         {5,0,0, 0,0,0, 0,6,4},
 
@@ -39,9 +44,11 @@ int main()
 
         {6,3,0, 0,0,0, 0,0,8},
         {0,9,0, 3,0,0, 5,2,0},
-        {0,0,2, 4,0,0, 6,0,0}};
+        {0,0,2, 4,0,0, 6,0,0}
+    };
     int medium1[N][N] =
-        {{0,9,0, 0,0,0, 0,0,8},
+    {
+        {0,9,0, 0,0,0, 0,0,8},
         {2,0,0, 0,0,0, 1,9,0},
         {4,0,0, 2,0,1, 0,0,0},
 
@@ -51,9 +58,11 @@ int main()
 
         {0,0,0, 5,0,3, 0,0,6},
         {0,8,6, 0,0,0, 0,0,1},
-        {5,0,0, 0,0,0, 0,7,0}};
+        {5,0,0, 0,0,0, 0,7,0}
+    };
     int hard1[N][N] =
-        {{0,0,0, 0,0,0, 0,0,0},
+    {
+        {0,0,0, 0,0,0, 0,0,0},
         {0,0,0, 0,0,3, 0,8,5},
         {0,0,1, 0,2,0, 0,0,0},
 
@@ -63,7 +72,10 @@ int main()
 
         {5,0,0, 0,0,0, 0,7,3},
         {0,0,2, 0,1,0, 0,0,0},
-        {0,0,0, 0,4,0, 0,0,9}};
+        {0,0,0, 0,4,0, 0,0,9}
+    };
+
+
     // creation of the head node
     Node *head = new Node;
     head->previous = NULL;
@@ -71,60 +83,83 @@ int main()
     head->col = -1;
     head->prevNum = -1;
 
-    string choice;
-    while(choice != "3")
+    bool applicationRunning = true; //is the program still running?
+    while(applicationRunning)
     {
+        int menuChoice;
         cout << "===Welcome to Sudoku!===" << endl;                 // MAIN MENU
         cout << "1. Load existing board" << endl;
         cout << "2. Open a puzzle from file" << endl;
         cout << "3. Quit" << endl;
-        cin >> choice;
-        if(choice == "1")                             // LOAD BOARD
+        cin >> menuChoice;
+        switch(menuChoice)
         {
+        case 1:
+        {
+            bool hasEnteredDiff = false;
             int currentArray[N][N];                                    // This will be our array that the user will change and solve
-            string diff;
-            cout << "What difficulty would you like? " << endl;
-            cin >> diff;
-            if(diff == "Easy"){                                         // this sets our currentarray equal to one of the three pre-existing puzzles and prints it
-                for(int i = 0; i < N+1; i++)
-                {
-                    for(int j = 0; j < N+1; j++)
-                    {
-                        currentArray[i][j] = easy1[i][j];
-                    }
-                }
-                printBoard(currentArray);
-            }
-            else if(diff == "Medium"){
-                for(int i = 0; i < N+1; i++)
-                {
-                    for(int j = 0; j < N+1; j++)
-                    {
-                        currentArray[i][j] = medium1[i][j];
-                    }
-                }
-                printBoard(medium1);
-            }
-            else if(diff == "Hard"){
-                for(int i = 0; i < N+1; i++)
-                {
-                    for(int j = 0; j < N+1; j++)
-                    {
-                        currentArray[i][j] = hard1[i][j];
-                    }
-                }
-                printBoard(hard1);
-            }
-            string choice2 = 0;
 
-            while(choice2 != "4")                                       // once a baord has been loaded it will prompt the user to enter values or solve the board
+            while(!hasEnteredDiff)
             {
+                int diffAnswer;
+                cout << "What difficulty would you like? (1.Easy, 2.Medium, 3.Hard) " << endl;
+                cin >> diffAnswer;
+                switch(diffAnswer)
+                {
+                case 1:
+                    for(int i = 0; i < N+1; i++)
+                    {
+                        for(int j = 0; j < N+1; j++)
+                        {
+                            currentArray[i][j] = easy1[i][j];
+                        }
+                    }
+                    printBoard(currentArray);
+                    hasEnteredDiff = true;
+                    break;
+                case 2:
+                    for(int i = 0; i < N+1; i++)
+                    {
+                        for(int j = 0; j < N+1; j++)
+                        {
+                            currentArray[i][j] = medium1[i][j];
+                        }
+                    }
+                    printBoard(medium1);
+                    hasEnteredDiff = true;
+                    break;
+                case 3:
+                        for(int i = 0; i < N+1; i++)
+                        {
+                            for(int j = 0; j < N+1; j++)
+                            {
+                                currentArray[i][j] = hard1[i][j];
+                            }
+                        }
+                    printBoard(hard1);
+                    hasEnteredDiff = true;
+                    break;
+                default:
+                    cout << "Invalid input. Enter 1 for Easy, 2 for Medium and 3 for Hard." << endl;
+                    cout << endl;
+                    break;
+                }
+            }
+
+            bool gameRunning = true;                                   // Stays true unless they have won the game or quit.
+
+            while(gameRunning)                                       // once a baord has been loaded it will prompt the user to enter values or solve the board
+            {
+                int menuOption;
                 cout << endl;
                 cout << "1. Enter a value" << endl;
                 cout << "2. Previous move" << endl;
                 cout << "3. Solve Board" << endl;
                 cout << "4. Previous Menu" << endl;
-                if(choice2 == "1")
+                cin >> menuOption;
+                switch(menuOption)
+                {
+                case 1:
                 {
                     int row;
                     int col;
@@ -142,27 +177,38 @@ int main()
                     cin >> three;
                     num = stoi(three);
                     int saveNum = currentArray[row][col];                           // this saves the previous number for our linked list to store
-                    nodeSud::saveMove(head, row, col, saveNum);                     // We do this so the user can backtrack if they make a mistake
+                    //n->saveMove(head, row, col, num);                    // We do this so the user can backtrack if they make a mistake
                     currentArray[row][col] = num;                                   // update array and print
                     printBoard(currentArray);
                 }
-                else if(choice2 == "2")                                             // undo the previous action and set the value back to the original
+                break;
+                case 2:
                 {
                     int row2 = head->row;
                     int col2 = head->col;
                     int num2 = head->prevNum;
                     currentArray[row2][col2] = num2;
                     printBoard(currentArray);
+                    break;
                 }
-                else if(choice2 == "3")                                             // call the function  to solve the array and print it
+                case 3:
                 {
                     if(solveCurrent(currentArray))
                         printBoard(currentArray);
                 }
+                break;
+                case 4:
+                    gameRunning = false;
+                    break;
+                default:
+                    cout << endl;
+                    cout << "Invalid input!" << endl;
+                    break;
+                }
             }
         }
-
-        else if(choice == "2")                        // OPEN FROM FILE
+        break;
+        case 2:
         {
             int currentArray[N][N];
             string fileName;
@@ -196,7 +242,7 @@ int main()
                     cin >> three;
                     num = stoi(three);
                     int saveNum = currentArray[row][col];                           // this saves the previous number for our linked list to store
-                    nodeSud::saveMove(head, row, col, saveNum);                     // We do this so the user can backtrack if they make a mistake
+                    //n->saveMove(head, row, col, saveNum);                     // We do this so the user can backtrack if they make a mistake
                     currentArray[row][col] = num;                                   // update array and print
                     printBoard(currentArray);
                 }
@@ -216,8 +262,17 @@ int main()
             }
 
         }
+        break;
+        case 3:
+            applicationRunning = false;
+            cout << "Goodbye!" << endl;
+            break;
+        default:
+            cout << endl;
+            cout << "Invalid input!" << endl;
+            break;
+        }
     }
-    cout << "Goodbye!" << endl;
 }
 /*
 Function prototype:
@@ -261,7 +316,7 @@ void parseFile(string file, int grid[N][N])
         {
             grid[i][j] = sudokuArray[i][j];
         }
-    printBoard(grid);
+        printBoard(grid);
     }
 }
 /*
@@ -279,25 +334,25 @@ Post condition:
 void printBoard(int grid[N][N])
 {
     cout << "  1  2  3     4  5  6     7  8  9" << endl;
-	 //cout << "  -------------------------" << endl;
+    //cout << "  -------------------------" << endl;
     int counter = -1;
-	 for(int i = 0; i < 9; i++)
-     {
+    for(int i = 0; i < 9; i++)
+    {
         if((i+1) % 3 == 1)
-             {
-                 cout << "  =============================== ||" << endl;
-             }
-         for(int j = 0; j < 9; j++)
-         {
-             cout << "  " << grid[i][j];
-             if((j-1) % 3 == 1)
-             {
-                 cout << " ||";
-             }
-             counter++;
-         }
-         cout << " " << i+1 << endl;
-     }
+        {
+            cout << "  =============================== ||" << endl;
+        }
+        for(int j = 0; j < 9; j++)
+        {
+            cout << "  " << grid[i][j];
+            if((j-1) % 3 == 1)
+            {
+                cout << " ||";
+            }
+            counter++;
+        }
+        cout << " " << i+1 << endl;
+    }
 }
 /*
 Function prototype:
@@ -313,12 +368,12 @@ Post condition:
     the function returns a bool so it must print the board if it returns true
 */
 bool solveCurrent(int grid[N][N])                                       // this function uses backtracking to find the true values
-                                                                        // if it makes a mistake it backtracks to find other values that fit
+// if it makes a mistake it backtracks to find other values that fit
 {
     int row, col;
 
     if (!findFirstSpace(grid, row, col))
-       return true;
+        return true;
     for (int num = 1; num <= 9; num++)
     {
 
