@@ -40,7 +40,7 @@ Precondition:
 Post condition:
     the place of the move and the number must have been saved in a node at the end of the linked list
 */
-Node saveMove(Node *headNode, int row, int col, int number)
+void saveMove(Node *headNode, int row, int col, int number)
 {
     Node *x = new Node;
     x->prevNum = number;
